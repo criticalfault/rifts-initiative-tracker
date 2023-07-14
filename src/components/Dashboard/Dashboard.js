@@ -1,7 +1,7 @@
 import Container from 'react-bootstrap/Container';
 import ControlPanel from './ControlPanel';
 import InitativeDisplay from './InitativeDisplay';
-import { Row, Col, Button } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import { useState, useEffect, useRef } from 'react';
 let nextId = 0;
 const Dashboard = (props) => {
@@ -14,38 +14,33 @@ const Dashboard = (props) => {
         {"id":1004,"name":"Eric","initative":35,"condition":{"stun":10,"physical":10}}
     ];
 
-    const [InitativeList, setInitativeList] = useState(initialList);
-    const PreviousInitative = useRef([]);
-    PreviousInitative.current = initialList;
+    const [InitativeList, setInitativeList] = useState([]);
+    const PreviousInitative = useRef(initialList);
 
     useEffect(() => {
         PreviousInitative.current = InitativeList;
-    }, [InitativeList]);
+    },[InitativeList]);
+
 
     const handleAddItem = (name) => {
-        PreviousInitative.current = [...PreviousInitative.current,{"id": nextId++,"name":name,"initative":0,"condition":{"stun":10,"physical":10}}];
-        setInitativeList(PreviousInitative.current);
+        console.log(PreviousInitative.current);
+        setInitativeList([...PreviousInitative.current,{"id": nextId++,"name":name,"initative":0,"condition":{"stun":10,"physical":10}}]);
     }
 
     const handleInitativeChange = (index,initative) => {
         console.log(index,initative);
-        //InitativeList[index].initative = initative;
-        //setInitativeList(InitativeList);
-    }
-
-    const preBuildList = () => {
-        setInitativeList(initialList);
+        // PreviousInitative.current[index].initative = initative;
+        // setInitativeList(PreviousInitative.current);
     }
 
   return (
     <Container>
         <Row>
             <Col>
-                <ControlPanel InitativeList={InitativeList} addItem={handleAddItem} changeInitative={handleInitativeChange}></ControlPanel>
-                <Button variant="primary" onClick={() => preBuildList()}>Prebuild InitativeList</Button>
+                <ControlPanel InitativeList={PreviousInitative.current} addItem={handleAddItem} changeInitative={handleInitativeChange}></ControlPanel>
             </Col>
             <Col>
-                <InitativeDisplay List={InitativeList} />
+                <InitativeDisplay List={PreviousInitative.current} />
             </Col>
         </Row>
   </Container>
