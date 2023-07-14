@@ -2,9 +2,10 @@ import Container from 'react-bootstrap/Container';
 import ControlPanel from './ControlPanel';
 import InitativeDisplay from './InitativeDisplay';
 import { Row, Col, Button } from 'react-bootstrap';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 let nextId = 0;
 const Dashboard = (props) => {
+
     const initialList = [
         {"id":1000,"name":"Jim","initative":21,"condition":{"stun":10,"physical":10}},
         {"id":1001,"name":"Dan","initative":15,"condition":{"stun":10,"physical":10}},
@@ -13,11 +14,17 @@ const Dashboard = (props) => {
         {"id":1004,"name":"Eric","initative":35,"condition":{"stun":10,"physical":10}}
     ];
 
-    const [InitativeList, setInitativeList] = useState([]);
+    const [InitativeList, setInitativeList] = useState(initialList);
+    const PreviousInitative = useRef([]);
+    PreviousInitative.current = initialList;
+
+    useEffect(() => {
+        PreviousInitative.current = InitativeList;
+    }, [InitativeList]);
 
     const handleAddItem = (name) => {
-        const myNextList = [...InitativeList,{"id": nextId++,"name":name,"initative":0,"condition":{"stun":10,"physical":10}}];
-        setInitativeList(myNextList);
+        PreviousInitative.current = [...PreviousInitative.current,{"id": nextId++,"name":name,"initative":0,"condition":{"stun":10,"physical":10}}];
+        setInitativeList(PreviousInitative.current);
     }
 
     const handleInitativeChange = (index,initative) => {

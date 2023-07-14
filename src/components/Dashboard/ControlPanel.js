@@ -4,13 +4,12 @@ import Form from 'react-bootstrap/Form';
 import Card from'react-bootstrap/Card';
 import InputGroup from 'react-bootstrap/InputGroup';
 import ConditionMonitor from '../ConditionMonitor/ConditionMonitor';
-import { useState } from 'react';
 function ControlPanel(props){
-    const [name, setName] = useState('');
     const handleAddItem = (e) => {
+        let name = document.getElementById('addNewParticipant').value;
         if(name === ''){ return;}
         props.addItem(name)
-        setName('');
+        name = '';
     }
     
     const changeInitative = (e) => {
@@ -31,8 +30,7 @@ function ControlPanel(props){
                 <Form.Control
                     placeholder="Name"
                     aria-label="Name of the participant you want to track intiative for."
-                    id={name}
-                    onChange={e => setName(e.target.value)}
+                    id="addNewParticipant"
                 />
                 <Button variant="outline-secondary" onClick={handleAddItem}>Add</Button>
             </InputGroup>
