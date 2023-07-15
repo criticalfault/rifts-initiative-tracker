@@ -4,7 +4,7 @@ import './ConditionMonitor.css';
 const ConditionMonitor = (props) => {
   const [selectedCondition, setSelectedCondition] = useState(null);
 
-  const handleClick = (number) => {
+  const handleClick = (number, key) => {
     let reset = false;
     setSelectedCondition((prevCondition) => {
       if (prevCondition === number) {
@@ -14,7 +14,7 @@ const ConditionMonitor = (props) => {
         return number; // Select the condition if it was not previously selected
       }
     });
-    props.onConditionSelect(number,props.type,reset);
+    props.onConditionSelect(number,props.type, reset, key);
   };
 
   const renderBoxes = () => {
@@ -27,7 +27,7 @@ const ConditionMonitor = (props) => {
         <div
           key={index}
           data-number={index}
-          onClick={() => handleClick(index)}
+          onClick={() => handleClick(index, props.targetID)}
           style={{
             ...styles.rectangle,
             borderColor: isSelected ? 'black' : 'black',

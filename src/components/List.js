@@ -1,18 +1,20 @@
 import { useState } from 'react';
 import { Container, InputGroup, Card, Form, Button, Col, Row } from 'react-bootstrap';
 import ConditionMonitor from './ConditionMonitor/ConditionMonitor';
+import ButtonConfirm from './ButtonConfirm';
+import './List.css';
 
 let nextId = 0;
 
 export default function List() {
   const initialList = [
-    {"id": 1000, "name": "Jim",  "initiative": 21, "PPenalty":0, "SPenalty":0},
-    {"id": 1001, "name": "Dan",  "initiative": 15, "PPenalty":0, "SPenalty":0},
-    {"id": 1002, "name": "Mike", "initiative": 10, "PPenalty":0, "SPenalty":0},
-    {"id": 1003, "name": "Lane", "initiative": 9,  "PPenalty":0, "SPenalty":0},
-    {"id": 1004, "name": "Eric", "initiative": 35, "PPenalty":0, "SPenalty":0}
+    // {"id": 1000, "name": "Jim",  "initiative": 21, "PPenalty":0, "SPenalty":0},
+    // {"id": 1001, "name": "Dan",  "initiative": 15, "PPenalty":0, "SPenalty":0},
+    // {"id": 1002, "name": "Mike", "initiative": 10, "PPenalty":0, "SPenalty":0},
+    // {"id": 1003, "name": "Lane", "initiative": 9,  "PPenalty":0, "SPenalty":0},
+    // {"id": 1004, "name": "Eric", "initiative": 35, "PPenalty":0, "SPenalty":0}
   ];
-
+  const [EditionSwitch, EditionSwitchSet] = useState(false);
   const [InitiativeList, setInitiativeList] = useState(initialList);
 
   const handleChangeInitiative = (event) => {
@@ -26,30 +28,32 @@ export default function List() {
     );
   };
 
-  const handleConditionSelect = (number, type, reset) => {
+  const handleChangeEdition = (event) => {
+    EditionSwitchSet(event.target.checked);
+  }
+
+  const handleConditionSelect = (number, type, reset, key) => {
     if(reset){
       const penalty = getInitiativePenalty(-1);
-      applyInitiativePenalty(penalty, type);
+      applyInitiativePenalty(penalty, type, key);
     }else{
       const penalty = getInitiativePenalty(number);
-      applyInitiativePenalty(penalty, type);
+      applyInitiativePenalty(penalty, type, key);
     }
   }
 
-  const applyInitiativePenalty = (penalty, type) => {
+  const applyInitiativePenalty = (penalty, type, key) => {
     if(type === 'P') {
       setInitiativeList((prevList) =>
-        prevList.map((actor) => ({
-          ...actor,
-          PPenalty: penalty,
-        }))
+        prevList.map((actor) => (
+          actor.id+'P' === key ? { ...actor, PPenalty: penalty } : {...actor}
+        ))
       );
     }else if(type === 'S') {
       setInitiativeList((prevList) =>
-        prevList.map((actor) => ({
-          ...actor,
-          SPenalty: penalty,
-        }))
+        prevList.map((actor) => (
+          actor.id+'S' === key ? { ...actor, SPenalty: penalty } : {...actor}
+        ))
       );
     }
   };
@@ -79,36 +83,52 @@ export default function List() {
   const renderInitiativeList = () => {
     let originalList = InitiativeList.slice();
     let finalList = [];
-  
+
     originalList.sort(function (a, b) {
       return b.initiative - a.initiative;
     });
   
     while (originalList.length > 0) {
       let tempInitHolder = { ...originalList.shift() };
-      let deepCopy = {...tempInitHolder}
-      deepCopy.initiative = deepCopy.initiative+deepCopy.SPenalty+deepCopy.PPenalty;
-      finalList.push({...deepCopy});
+      tempInitHolder.initiative = parseInt(tempInitHolder.initiative) + parseInt(tempInitHolder.SPenalty) + parseInt(tempInitHolder.PPenalty);
+      finalList.push({...tempInitHolder});
       tempInitHolder.initiative -= 10;
       if(tempInitHolder.initiative > 0) {
         originalList.push(tempInitHolder);
       }
     }
   
-    finalList.sort(function (a, b) {
-      return b.initiative - a.initiative;
-    });
-  
+    if(!EditionSwitch){
+      finalList.sort(function (a, b) {
+        return b.initiative - a.initiative;
+      });
+    }
     return finalList;
-  };
-  
 
+  };
+
+  const onConfirmDel = (type, param, id) =>
+  {
+    if(type === 'yes') {
+      setInitiativeList(InitiativeList.filter((a) => a.id !== id));
+    }
+  }
+  
   return (
     <>
       <Container>
         <Row>
           <Col>
             <h1>Actors:</h1>
+            <Form><span>SR2</span>
+                <Form.Check
+                    value={EditionSwitch}
+                    type="switch"
+                    id="custom-switch"
+                    onChange={handleChangeEdition}
+                /><span>SR3</span>
+            </Form>
+            <hr />
             <InputGroup className="mb-2">
               <Form.Control id="newName" />
               <Button
@@ -116,7 +136,7 @@ export default function List() {
                   let name = document.getElementById('newName').value;
                   setInitiativeList([
                     ...InitiativeList,
-                    {"id": nextId++, "name": name, "initiative": 0, "condition": {"stun": 10, "physical": 10}}
+                    {"id": nextId++, "name": name, "initiative": 1, "PPenalty":0, "SPenalty":0}
                   ]);
                 }}
               >
@@ -127,17 +147,11 @@ export default function List() {
               <Card style={{ width: '21rem', margin: '2px auto' }} key={actor.id}>
                 <Card.Body>
                   <Card.Title>
-                    {actor.name}: <input value={actor.initiative} onChange={handleChangeInitiative} data-key={actor.id} type="number" />
+                    {actor.name}: <input value={actor.initiative} style={{width:'100px'}} onChange={handleChangeInitiative} data-key={actor.id} type="number" />  <ButtonConfirm onConfirm={onConfirmDel} targetID={actor.id}  title="Delete" query="Are you sure...?"  />
                   </Card.Title>
-                  <ConditionMonitor type="S" key={actor.id+'S'} onConditionSelect={handleConditionSelect} />
-                  <ConditionMonitor type="P" key={actor.id+'P'} onConditionSelect={handleConditionSelect} />
-                  <Button
-                    onClick={() => {
-                      setInitiativeList(InitiativeList.filter((a) => a.id !== actor.id));
-                    }}
-                  >
-                    Remove
-                  </Button>
+                  <ConditionMonitor type="S" key={actor.id+'S'} targetID={actor.id+'S'} onConditionSelect={handleConditionSelect} />
+                  <ConditionMonitor type="P" key={actor.id+'P'} targetID={actor.id+'P'} onConditionSelect={handleConditionSelect} />
+                 
                 </Card.Body>
               </Card>
             ))}
