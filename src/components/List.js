@@ -8,11 +8,11 @@ let nextId = 0;
 
 export default function List() {
   const initialList = [
-    {"id": 1000, "name": "Jim",  "initiative": 21, "PPenalty":0, "SPenalty":0},
-    {"id": 1001, "name": "Dan",  "initiative": 15, "PPenalty":0, "SPenalty":0},
-    {"id": 1002, "name": "Mike", "initiative": 10, "PPenalty":0, "SPenalty":0},
-    {"id": 1003, "name": "Lane", "initiative": 9,  "PPenalty":0, "SPenalty":0},
-    {"id": 1004, "name": "Eric", "initiative": 35, "PPenalty":0, "SPenalty":0}
+    // {"id": 1000, "name": "Jim",  "initiative": 21, "PPenalty":0, "SPenalty":0},
+    // {"id": 1001, "name": "Dan",  "initiative": 15, "PPenalty":0, "SPenalty":0},
+    // {"id": 1002, "name": "Mike", "initiative": 10, "PPenalty":0, "SPenalty":0},
+    // {"id": 1003, "name": "Lane", "initiative": 9,  "PPenalty":0, "SPenalty":0},
+    // {"id": 1004, "name": "Eric", "initiative": 35, "PPenalty":0, "SPenalty":0}
   ];
   const [EditionSwitch, EditionSwitchSet] = useState(false);
   const [InitiativeList, setInitiativeList] = useState(initialList);
@@ -29,7 +29,7 @@ export default function List() {
   };
 
   const handleChangeEdition = (event) => {
-    EditionSwitchSet(event.target.value);
+    EditionSwitchSet(event.target.checked);
   }
 
   const handleConditionSelect = (number, type, reset, key) => {
@@ -83,7 +83,7 @@ export default function List() {
   const renderInitiativeList = () => {
     let originalList = InitiativeList.slice();
     let finalList = [];
-  
+
     originalList.sort(function (a, b) {
       return b.initiative - a.initiative;
     });
@@ -98,11 +98,13 @@ export default function List() {
       }
     }
   
-    finalList.sort(function (a, b) {
-      return b.initiative - a.initiative;
-    });
-  
+    if(!EditionSwitch){
+      finalList.sort(function (a, b) {
+        return b.initiative - a.initiative;
+      });
+    }
     return finalList;
+
   };
 
   const onConfirmDel = (type, param, id) =>
@@ -134,7 +136,7 @@ export default function List() {
                   let name = document.getElementById('newName').value;
                   setInitiativeList([
                     ...InitiativeList,
-                    {"id": nextId++, "name": name, "initiative": 0, "condition": {"stun": 10, "physical": 10}}
+                    {"id": nextId++, "name": name, "initiative": 1, "PPenalty":0, "SPenalty":0}
                   ]);
                 }}
               >
@@ -145,11 +147,11 @@ export default function List() {
               <Card style={{ width: '21rem', margin: '2px auto' }} key={actor.id}>
                 <Card.Body>
                   <Card.Title>
-                    {actor.name}: <input value={actor.initiative} onChange={handleChangeInitiative} data-key={actor.id} type="number" />
+                    {actor.name}: <input value={actor.initiative} style={{width:'100px'}} onChange={handleChangeInitiative} data-key={actor.id} type="number" />  <ButtonConfirm onConfirm={onConfirmDel} targetID={actor.id}  title="Delete" query="Are you sure...?"  />
                   </Card.Title>
                   <ConditionMonitor type="S" key={actor.id+'S'} targetID={actor.id+'S'} onConditionSelect={handleConditionSelect} />
                   <ConditionMonitor type="P" key={actor.id+'P'} targetID={actor.id+'P'} onConditionSelect={handleConditionSelect} />
-                  <ButtonConfirm onConfirm={onConfirmDel} targetID={actor.id}  title="Delete" query="Are you sure...?"  />
+                 
                 </Card.Body>
               </Card>
             ))}
