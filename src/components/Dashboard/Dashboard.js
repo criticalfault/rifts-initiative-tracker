@@ -23,7 +23,7 @@ const Dashboard = (props) => {
     const handleInitativeChange = (index,initative) => {
         console.log(index,initative);
         //InitativeList[index].initative = initative;
-        //setInitativeList(InitativeList);
+        setInitativeList(InitativeList);
     }
 
     const preBuildList = () => {
