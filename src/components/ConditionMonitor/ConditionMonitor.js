@@ -5,13 +5,16 @@ const ConditionMonitor = (props) => {
   const [selectedCondition, setSelectedCondition] = useState(null);
 
   const handleClick = (number) => {
+    let reset = false;
     setSelectedCondition((prevCondition) => {
       if (prevCondition === number) {
+        reset = true;
         return null; // Unselect the condition if it was already selected
       } else {
         return number; // Select the condition if it was not previously selected
       }
     });
+    props.onConditionSelect(number,props.type,reset);
   };
 
   const renderBoxes = () => {
@@ -27,8 +30,8 @@ const ConditionMonitor = (props) => {
           onClick={() => handleClick(index)}
           style={{
             ...styles.rectangle,
-            borderColor: isSelected ? 'red' : 'black',
-            backgroundColor: isSelected ? 'red' : 'transparent',
+            borderColor: isSelected ? 'black' : 'black',
+            backgroundColor: isSelected ? 'cyan' : 'transparent',
           }}
         >
           <span>{box}</span>

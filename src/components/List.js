@@ -1,112 +1,160 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { Container, InputGroup, Card, Form, Button, Col, Row } from 'react-bootstrap';
 import ConditionMonitor from './ConditionMonitor/ConditionMonitor';
+
 let nextId = 0;
 
 export default function List() {
   const initialList = [
-      {"id":1000,"name":"Jim","initative":21,"condition":{"stun":10,"physical":10}},
-      {"id":1001,"name":"Dan","initative":15,"condition":{"stun":10,"physical":10}},
-      {"id":1002,"name":"Mike","initative":10,"condition":{"stun":10,"physical":10}},
-      {"id":1003,"name":"Lane","initative":9,"condition":{"stun":10,"physical":10}},
-      {"id":1004,"name":"Eric","initative":35,"condition":{"stun":10,"physical":10}}
+    {"id": 1000, "name": "Jim",  "initiative": 21, "PPenalty":0, "SPenalty":0},
+    {"id": 1001, "name": "Dan",  "initiative": 15, "PPenalty":0, "SPenalty":0},
+    {"id": 1002, "name": "Mike", "initiative": 10, "PPenalty":0, "SPenalty":0},
+    {"id": 1003, "name": "Lane", "initiative": 9,  "PPenalty":0, "SPenalty":0},
+    {"id": 1004, "name": "Eric", "initiative": 35, "PPenalty":0, "SPenalty":0}
   ];
-  const Initative = useRef([
-      {"id":1000,"name":"Jim","initative":21,"condition":{"stun":10,"physical":10}},
-      {"id":1001,"name":"Dan","initative":15,"condition":{"stun":10,"physical":10}},
-      {"id":1002,"name":"Mike","initative":10,"condition":{"stun":10,"physical":10}},
-      {"id":1003,"name":"Lane","initative":9,"condition":{"stun":10,"physical":10}},
-      {"id":1004,"name":"Eric","initative":35,"condition":{"stun":10,"physical":10}}
-  ]);
-  const [name, setName] = useState('');
-  const [InitativeList, setInitativeList] = useState(initialList);
 
+  const [InitiativeList, setInitiativeList] = useState(initialList);
 
-  const handleChangeInitative = (e) => { 
-    // let initChange = e.target.value;
-    // let target = e.target.getAttribute('data-key');
-    // console.log(InitativeList);
-    // var originalList = InitativeList;
+  const handleChangeInitiative = (event) => {
+    const { value, dataset } = event.target;
+    const { key } = dataset;
+    
+    setInitiativeList((prevState) =>
+      prevState.map((actor) =>
+        actor.id === parseInt(key) ? { ...actor, initiative: value } : {...actor}
+      )
+    );
+  };
 
-    // for(let i = 0;i < originalList.length;i++){
-    //   if(originalList[i].id === target){
-    //     originalList[i].initative = initChange;
-    //   }
-    // }
-    //setInitativeList([...originalList]);
-    setInitativeList([
-      ...InitativeList,
-      {"id": nextId++,"name":name,"initative":0,"condition":{"stun":10,"physical":10}}
-    ]);
+  const handleConditionSelect = (number, type, reset) => {
+    if(reset){
+      const penalty = getInitiativePenalty(-1);
+      applyInitiativePenalty(penalty, type);
+    }else{
+      const penalty = getInitiativePenalty(number);
+      applyInitiativePenalty(penalty, type);
+    }
   }
 
-  const renderInitativeList = (initative) => {
-    var originalList = InitativeList;
-    var finalList = [];
-    originalList.sort(function(a, b){
-        return b.initative-a.initative
-    });
-
-    while (originalList.length > 0) {
-        let TempInitHolder = originalList.shift();
-        finalList.push({ ...TempInitHolder });
-        TempInitHolder.initative -= 10;
-        if(TempInitHolder.initative > 0){
-            originalList.push(TempInitHolder);
-        }
+  const applyInitiativePenalty = (penalty, type) => {
+    if(type === 'P') {
+      setInitiativeList((prevList) =>
+        prevList.map((actor) => ({
+          ...actor,
+          PPenalty: penalty,
+        }))
+      );
+    }else if(type === 'S') {
+      setInitiativeList((prevList) =>
+        prevList.map((actor) => ({
+          ...actor,
+          SPenalty: penalty,
+        }))
+      );
     }
-    finalList.sort(function(a, b){
-        return b.initative-a.initative
-    });
+  };
 
-    return(finalList);
-}
+  const getInitiativePenalty = (number) => {
+    switch (number) {
+      case -1:
+        return 0;
+      case 0:
+      case 1:
+        return -1;
+      case 2:
+      case 3:
+      case 4:
+        return -2;
+      case 5:
+      case 6:
+      case 7:
+      case 8:
+      case 9:
+        return -3;
+      default:
+        return 0;
+    }
+  };
+
+  const renderInitiativeList = () => {
+    let originalList = InitiativeList.slice();
+    let finalList = [];
+  
+    originalList.sort(function (a, b) {
+      return b.initiative - a.initiative;
+    });
+  
+    while (originalList.length > 0) {
+      let tempInitHolder = { ...originalList.shift() };
+      let deepCopy = {...tempInitHolder}
+      deepCopy.initiative = deepCopy.initiative+deepCopy.SPenalty+deepCopy.PPenalty;
+      finalList.push({...deepCopy});
+      tempInitHolder.initiative -= 10;
+      if(tempInitHolder.initiative > 0) {
+        originalList.push(tempInitHolder);
+      }
+    }
+  
+    finalList.sort(function (a, b) {
+      return b.initiative - a.initiative;
+    });
+  
+    return finalList;
+  };
+  
 
   return (
     <>
-    <Container>
+      <Container>
         <Row>
-            <Col>
+          <Col>
             <h1>Actors:</h1>
-            <InputGroup className='mb-2'>
-                <Form.Control
-              value={name}
-              onChange={e => setName(e.target.value)}
-            />
-            <Button onClick={() => {
-              setInitativeList([
-                ...InitativeList,
-                {"id": nextId++,"name":name,"initative":0,"condition":{"stun":10,"physical":10}}
-              ]);
-            }}>Add</Button>
+            <InputGroup className="mb-2">
+              <Form.Control id="newName" />
+              <Button
+                onClick={() => {
+                  let name = document.getElementById('newName').value;
+                  setInitiativeList([
+                    ...InitiativeList,
+                    {"id": nextId++, "name": name, "initiative": 0, "condition": {"stun": 10, "physical": 10}}
+                  ]);
+                }}
+              >
+                Add
+              </Button>
             </InputGroup>
-              {InitativeList.map(actor => (
-
-                <Card style={{ width: '21rem', margin:'2px auto' }} key={actor.id}>
+            {InitiativeList.map((actor) => (
+              <Card style={{ width: '21rem', margin: '2px auto' }} key={actor.id}>
+                <Card.Body>
+                  <Card.Title>
+                    {actor.name}: <input value={actor.initiative} onChange={handleChangeInitiative} data-key={actor.id} type="number" />
+                  </Card.Title>
+                  <ConditionMonitor type="S" key={actor.id+'S'} onConditionSelect={handleConditionSelect} />
+                  <ConditionMonitor type="P" key={actor.id+'P'} onConditionSelect={handleConditionSelect} />
+                  <Button
+                    onClick={() => {
+                      setInitiativeList(InitiativeList.filter((a) => a.id !== actor.id));
+                    }}
+                  >
+                    Remove
+                  </Button>
+                </Card.Body>
+              </Card>
+            ))}
+          </Col>
+          <Col>
+            <div>
+              <h2>Initiative Order</h2>
+              {renderInitiativeList(InitiativeList).map((character, index) => (
+                <Card style={{ width: '18rem', margin: '2px auto' }} key={index}>
                   <Card.Body>
-                      <Card.Title>{actor.name}: <input value={actor.initative} onChange={handleChangeInitative} data-key={actor.id} type='number' /></Card.Title>
-                      <ConditionMonitor type='S'></ConditionMonitor>
-                      <ConditionMonitor type='P'></ConditionMonitor>
-                      <Button onClick={() => {
-                        setInitativeList(
-                          InitativeList.filter(a =>
-                            a.id !== actor.id
-                          )
-                        );
-                      }}>Remove</Button>
+                    <Card.Title>{character.name} - {character.initiative}</Card.Title>
                   </Card.Body>
                 </Card>
               ))}
-            </Col>
-            <Col>
-              <div>
-                <h2>Initative Order</h2>
-                {
-                    // renderInitativeList(InitativeList)
-                }
-              </div>
-            </Col>
-          </Row>
+            </div>
+          </Col>
+        </Row>
       </Container>
     </>
   );
