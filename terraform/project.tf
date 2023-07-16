@@ -5,6 +5,5 @@ resource "digitalocean_project" "nullsheen" {
   environment = "Production"
   resources   = [
   digitalocean_app.sr-initiative-tracker.urn,
-  digitalocean_domain.nullsheen.urn
   ]
 }
