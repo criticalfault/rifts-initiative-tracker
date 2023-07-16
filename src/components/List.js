@@ -7,13 +7,9 @@ import './List.css';
 let nextId = 0;
 
 export default function List() {
-  const initialList = [
-    // {"id": 1000, "name": "Jim",  "initiative": 21, "PPenalty":0, "SPenalty":0},
-    // {"id": 1001, "name": "Dan",  "initiative": 15, "PPenalty":0, "SPenalty":0},
-    // {"id": 1002, "name": "Mike", "initiative": 10, "PPenalty":0, "SPenalty":0},
-    // {"id": 1003, "name": "Lane", "initiative": 9,  "PPenalty":0, "SPenalty":0},
-    // {"id": 1004, "name": "Eric", "initiative": 35, "PPenalty":0, "SPenalty":0}
-  ];
+  const initialList = [];
+  const [ShowConditionMonitors, SetShowConditionMonitors] = useState(true);
+  const [ConditionMonitorsEffectInitiative, SetConditionMonitorsEffectInitiative] = useState(true);
   const [EditionSwitch, EditionSwitchSet] = useState(false);
   const [InitiativeList, setInitiativeList] = useState(initialList);
 
@@ -30,6 +26,14 @@ export default function List() {
 
   const handleChangeEdition = (event) => {
     EditionSwitchSet(event.target.checked);
+  }
+
+  const handleConditionMonitorsEffectInitiative = (event) => {
+    SetConditionMonitorsEffectInitiative(event.target.checked);
+  }
+
+  const handleShowConditionMonitors = (event) => {
+    SetShowConditionMonitors(event.target.checked);
   }
 
   const handleConditionSelect = (number, type, reset, key) => {
@@ -90,7 +94,12 @@ export default function List() {
   
     while (originalList.length > 0) {
       let tempInitHolder = { ...originalList.shift() };
-      tempInitHolder.initiative = parseInt(tempInitHolder.initiative) + parseInt(tempInitHolder.SPenalty) + parseInt(tempInitHolder.PPenalty);
+      if(ConditionMonitorsEffectInitiative){
+        tempInitHolder.initiative = parseInt(tempInitHolder.initiative) + parseInt(tempInitHolder.SPenalty) + parseInt(tempInitHolder.PPenalty);
+      }else{
+        tempInitHolder.initiative = parseInt(tempInitHolder.initiative);
+      }
+     
       finalList.push({...tempInitHolder});
       tempInitHolder.initiative -= 10;
       if(tempInitHolder.initiative > 0) {
@@ -113,6 +122,13 @@ export default function List() {
       setInitiativeList(InitiativeList.filter((a) => a.id !== id));
     }
   }
+
+  const ConditionMonitorsToRender = (actor) =>{
+    if(ShowConditionMonitors){
+      return ( <><ConditionMonitor type="S" key={actor.id+'S'} targetID={actor.id+'S'} onConditionSelect={handleConditionSelect} />
+      <ConditionMonitor type="P" key={actor.id+'P'} targetID={actor.id+'P'} onConditionSelect={handleConditionSelect} /></>)
+    }
+  }
   
   return (
     <>
@@ -124,10 +140,25 @@ export default function List() {
                 <Form.Check
                     value={EditionSwitch}
                     type="switch"
-                    id="custom-switch"
                     onChange={handleChangeEdition}
                 /><span>SR3</span>
             </Form>
+            <Form><span>Show Condition Monitors</span>
+                <Form.Check
+                    defaultChecked={ShowConditionMonitors} 
+                    value={ShowConditionMonitors}
+                    type="switch"
+                    onChange={handleShowConditionMonitors}
+                />
+            </Form>
+            <Form><span>Condition Monitors Effect Initiative</span>
+                <Form.Check
+                    defaultChecked={ConditionMonitorsEffectInitiative}
+                    value={ConditionMonitorsEffectInitiative}
+                    type="switch"
+                    onChange={handleConditionMonitorsEffectInitiative}
+                />
+            </Form> 
             <hr />
             <InputGroup className="mb-2">
               <Form.Control id="newName" />
@@ -149,9 +180,9 @@ export default function List() {
                   <Card.Title>
                     {actor.name}: <input value={actor.initiative} style={{width:'100px'}} onChange={handleChangeInitiative} data-key={actor.id} type="number" />  <ButtonConfirm onConfirm={onConfirmDel} targetID={actor.id}  title="Delete" query="Are you sure...?"  />
                   </Card.Title>
-                  <ConditionMonitor type="S" key={actor.id+'S'} targetID={actor.id+'S'} onConditionSelect={handleConditionSelect} />
-                  <ConditionMonitor type="P" key={actor.id+'P'} targetID={actor.id+'P'} onConditionSelect={handleConditionSelect} />
-                 
+                  {
+                    ConditionMonitorsToRender(actor)
+                  }
                 </Card.Body>
               </Card>
             ))}
