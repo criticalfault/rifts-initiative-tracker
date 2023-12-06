@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Container, InputGroup, Card, Form, Button, Col, Row } from 'react-bootstrap';
+import { Container, InputGroup, Card, Form, Button, Col, Row, Modal } from 'react-bootstrap';
 import ConditionMonitor from './ConditionMonitor/ConditionMonitor';
 import ButtonConfirm from './ButtonConfirm';
 import './List.css';
@@ -12,6 +12,42 @@ export default function List() {
   const [ConditionMonitorsEffectInitiative, SetConditionMonitorsEffectInitiative] = useState(true);
   const [EditionSwitch, EditionSwitchSet] = useState(false);
   const [InitiativeList, setInitiativeList] = useState(initialList);
+  const [showModal, setShowModal] = useState(false)
+
+  const handleModalClose = () => {
+    setShowModal(false);
+  };
+
+  const handleModalOpen = () => {
+    setShowModal(true);
+  };
+
+  const  handleSaveProject = (event) => {
+    let systemJSON =JSON.stringify(InitiativeList);
+    const blob = new Blob([systemJSON], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+  
+    // Create a link element and trigger the download
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'InitativeList.json';
+    link.click();
+  
+    // Clean up by revoking the object URL
+    URL.revokeObjectURL(url);
+  }
+
+const handleLoadProject = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const fileData = e.target.result;
+        
+        setInitiativeList(JSON.parse(fileData));
+        setShowModal(false);
+    }    
+    reader.readAsText(file); 
+  }
 
   const handleChangeInitiative = (event) => {
     const { value, dataset } = event.target;
@@ -135,6 +171,25 @@ export default function List() {
       <Container>
         <Row>
           <Col>
+            <Button className='saveButton' onClick={handleSaveProject}>Save Order</Button>              
+            <Button className='loadButton' onClick={handleModalOpen}  >Load Order</Button>
+            <br></br>
+            <Modal show={showModal} onHide={handleModalClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Upload initive List</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <input type="file" accept=".json" onChange={handleLoadProject} />
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleModalClose}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={handleModalClose}>
+                        Upload
+                    </Button>
+                </Modal.Footer>
+            </Modal>
             <h1>Actors:</h1>
             <Form><span>SR2</span>
                 <Form.Check
