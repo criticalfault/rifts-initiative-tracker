@@ -35,6 +35,11 @@ export default function List() {
   
     // Clean up by revoking the object URL
     URL.revokeObjectURL(url);
+    let Edition = '2nd';
+    if(EditionSwitch){
+      Edition = '3rd';
+    }
+    fathom.trackEvent('Saved Initiative for '+Edition);
   }
 
 const handleLoadProject = (event) => {
@@ -45,6 +50,7 @@ const handleLoadProject = (event) => {
         
         setInitiativeList(JSON.parse(fileData));
         setShowModal(false);
+        fathom.trackEvent('Loaded Initiative');
     }    
     reader.readAsText(file); 
   }
