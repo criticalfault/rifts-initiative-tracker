@@ -13,6 +13,11 @@ export default function List() {
   const [EditionSwitch, EditionSwitchSet] = useState(false);
   const [InitiativeList, setInitiativeList] = useState(initialList);
   const [showModal, setShowModal] = useState(false)
+  const [selectedCardIndex, setSelectedCardIndex] = useState(null); // State to track the selected card
+
+  const handleCardClick = (index) => { // Function to handle card click
+      setSelectedCardIndex(index); // Update the selected card index
+  };
 
   const handleModalClose = () => {
     setShowModal(false);
@@ -39,7 +44,7 @@ export default function List() {
     if(EditionSwitch){
       Edition = '3rd';
     }
-    fathom.trackEvent('Saved Initiative for '+Edition);
+    fathom.trackEvent('Saved Initiative for '+Edition); // eslint-disable-line
   }
 
 const handleLoadProject = (event) => {
@@ -50,7 +55,7 @@ const handleLoadProject = (event) => {
         
         setInitiativeList(JSON.parse(fileData));
         setShowModal(false);
-        fathom.trackEvent('Loaded Initiative');
+        fathom.trackEvent('Loaded Initiative'); // eslint-disable-line
     }    
     reader.readAsText(file); 
   }
@@ -236,7 +241,7 @@ const handleLoadProject = (event) => {
               </Button>
             </InputGroup>
             {InitiativeList.map((actor) => (
-              <Card style={{ width: '21rem', margin: '2px auto' }} key={actor.id}>
+              <Card style={{ width: '21rem', margin: '2px auto' }} key={actor.id} >
                 <Card.Body>
                   <Card.Title>
                     {actor.name}: <input value={actor.initiative} style={{width:'100px'}} onChange={handleChangeInitiative} data-key={actor.id} type="number" />  <ButtonConfirm onConfirm={onConfirmDel} targetID={actor.id}  title="Delete" query="Are you sure...?"  />
@@ -251,13 +256,17 @@ const handleLoadProject = (event) => {
           <Col>
             <div>
               <h2>Initiative Order</h2>
-              {renderInitiativeList(InitiativeList).map((character, index) => (
-                <Card style={{ width: '18rem', margin: '2px auto' }} key={index}>
-                  <Card.Body>
+              {renderInitiativeList(InitiativeList).map((character, index) =>{  
+                const cardStyles = selectedCardIndex === index ? 
+                { width: '18rem', margin: '2px auto', backgroundColor: 'rgb(0, 169, 256)', cursor: 'pointer' } : // Highlighted style
+                { width: '18rem', margin: '2px auto', cursor: 'pointer' }; // Default style
+                return(
+                <Card style={cardStyles} key={index} onClick={() => handleCardClick(index)}>
+                  <Card.Body >
                     <Card.Title>{character.name} - {character.initiative}</Card.Title>
                   </Card.Body>
                 </Card>
-              ))}
+              )})}
             </div>
           </Col>
         </Row>
