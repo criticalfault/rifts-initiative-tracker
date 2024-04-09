@@ -4,10 +4,10 @@ import './ConditionMonitor.css';
 const ConditionMonitor = (props) => {
   const [selectedCondition, setSelectedCondition] = useState(null);
 
-  const handleClick = (number, key) => {
+  const handleClick = (number, key, selected) => {
     let reset = false;
     setSelectedCondition((prevCondition) => {
-      if (prevCondition === number) {
+      if (prevCondition === number || selected === true) {
         reset = true;
         return null; // Unselect the condition if it was already selected
       } else {
@@ -27,14 +27,14 @@ const ConditionMonitor = (props) => {
         <div
           key={index}
           data-number={index}
-          onClick={() => handleClick(index, props.targetID)}
+          onClick={() => handleClick(index, props.targetID,isSelected)}
           style={{
             ...styles.rectangle,
             borderColor: isSelected ? 'black' : 'black',
             backgroundColor: isSelected ? 'cyan' : 'transparent',
           }}
         >
-          <span>{box}</span>
+          <span className='noselect'>{box}</span>
         </div>
       );
     });
@@ -43,7 +43,7 @@ const ConditionMonitor = (props) => {
   return (
     <div className="conditionMonitor">
       <div className="conditionBoxes">
-        <span>{props.type}</span>
+        <span className='noselect'>{props.type}</span>
         {renderBoxes()}
       </div>
     </div>
