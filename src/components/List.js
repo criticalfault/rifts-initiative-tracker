@@ -52,8 +52,9 @@ const handleLoadProject = (event) => {
     const reader = new FileReader();
     reader.onload = (e) => {
         const fileData = e.target.result;
-        
-        setInitiativeList(JSON.parse(fileData));
+        let inits = JSON.parse(fileData);
+        setInitiativeList(inits);
+        nextId = inits.length;
         setShowModal(false);
         fathom.trackEvent('Loaded Initiative'); // eslint-disable-line
     }    
@@ -85,8 +86,7 @@ const handleLoadProject = (event) => {
 
   const handleConditionSelect = (number, type, reset, key) => {
     if(reset){
-      const penalty = getInitiativePenalty(-1);
-      applyInitiativePenalty(penalty, type, key);
+      applyInitiativePenalty(0, type, key);
     }else{
       const penalty = getInitiativePenalty(number);
       applyInitiativePenalty(penalty, type, key);
@@ -142,7 +142,11 @@ const handleLoadProject = (event) => {
     while (originalList.length > 0) {
       let tempInitHolder = { ...originalList.shift() };
       if(ConditionMonitorsEffectInitiative){
-        tempInitHolder.initiative = parseInt(tempInitHolder.initiative) + parseInt(tempInitHolder.SPenalty) + parseInt(tempInitHolder.PPenalty);
+        if(!tempInitHolder.hasOwnProperty('skipWoundPhase') || tempInitHolder.hasOwnProperty('skipWoundPhase') !== true){
+          tempInitHolder.initiative = parseInt(tempInitHolder.initiative) + parseInt(tempInitHolder.SPenalty) + parseInt(tempInitHolder.PPenalty);
+        }else{
+          tempInitHolder.initiative = parseInt(tempInitHolder.initiative);
+        }
       }else{
         tempInitHolder.initiative = parseInt(tempInitHolder.initiative);
       }
@@ -150,6 +154,7 @@ const handleLoadProject = (event) => {
       finalList.push({...tempInitHolder});
       tempInitHolder.initiative -= 10;
       if(tempInitHolder.initiative > 0) {
+        tempInitHolder.skipWoundPhase = true;
         originalList.push(tempInitHolder);
       }
     }
@@ -172,8 +177,10 @@ const handleLoadProject = (event) => {
 
   const ConditionMonitorsToRender = (actor) =>{
     if(ShowConditionMonitors){
-      return ( <><ConditionMonitor type="S" key={actor.id+'S'} targetID={actor.id+'S'} onConditionSelect={handleConditionSelect} />
-      <ConditionMonitor type="P" key={actor.id+'P'} targetID={actor.id+'P'} onConditionSelect={handleConditionSelect} /></>)
+      return ( <>
+                <ConditionMonitor type="S" key={actor.id+'S'} targetID={actor.id+'S'} onConditionSelect={handleConditionSelect} />
+                <ConditionMonitor type="P" key={actor.id+'P'} targetID={actor.id+'P'} onConditionSelect={handleConditionSelect} />
+              </>)
     }
   }
   
@@ -246,6 +253,7 @@ const handleLoadProject = (event) => {
                   <Card.Title>
                     {actor.name}: <input value={actor.initiative} style={{width:'100px'}} onChange={handleChangeInitiative} data-key={actor.id} type="number" />  <ButtonConfirm onConfirm={onConfirmDel} targetID={actor.id}  title="Delete" query="Are you sure...?"  />
                   </Card.Title>
+                  SPenalty:{actor.SPenalty}  PPenalty:{actor.PPenalty}
                   {
                     ConditionMonitorsToRender(actor)
                   }
