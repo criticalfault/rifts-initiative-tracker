@@ -9,12 +9,13 @@ const ConditionMonitor = (props) => {
     setSelectedCondition((prevCondition) => {
       if (prevCondition === number || selected === true) {
         reset = true;
+        props.onConditionSelect(number, props.type, reset, key);
         return null; // Unselect the condition if it was already selected
       } else {
+        props.onConditionSelect(number, props.type, reset, key);
         return number; // Select the condition if it was not previously selected
       }
     });
-    props.onConditionSelect(number,props.type, reset, key);
   };
 
   const renderBoxes = () => {

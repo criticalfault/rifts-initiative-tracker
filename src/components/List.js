@@ -85,7 +85,7 @@ const handleLoadProject = (event) => {
   }
 
   const handleConditionSelect = (number, type, reset, key) => {
-    if(reset){
+    if(reset === true){
       applyInitiativePenalty(0, type, key);
     }else{
       const penalty = getInitiativePenalty(number);
