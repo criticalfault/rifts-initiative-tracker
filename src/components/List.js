@@ -186,30 +186,33 @@ const handleLoadProject = (event) => {
   
   return (
     <>
-        <nav className="pv3 ph3 ph4-ns" role="navigation" style={{"background":"black"}}>
-          <div className="flex-l justify-between items-center center">
-            <a href="/" className="f3 fw2 hover-white no-underline white-90 dib">NullSheen Shadowrun Tools</a>
-            <div className="flex-l items-center">
-              <ul className="pl0 mr3">
-                <li className="list f5 f4-ns fw4 dib pr3">
-                  <a className="hover-white no-underline white-90" href="https://matrix.nullsheen.com" title="Matrix Gen (3rd) page">Matrix Gen (3rd)</a>
-                </li>
-                <li className="list f5 f4-ns fw4 dib pr3">
-                  <a className="hover-white no-underline white-90" href="https://matrix2.nullsheen.com" title="Matrix Builder (2nd) page">Matrix Builder (2nd)</a>
-                </li>
-                <li className="list f5 f4-ns fw4 dib pr3">
-                  <a className="hover-white no-underline white-90" href="https://initiative-tracker.nullsheen.com/" title="Init Tracker page">Init Tracker</a>
-                </li>
-                <li className="list f5 f4-ns fw4 dib pr3"><a className="hover-white no-underline white-90" href="https://www.nullsheen.com/software/" title="Tools page">Tools</a></li>
-                <li className="list f5 f4-ns fw4 dib pr3"><a className="hover-white no-underline white-90" href="https://www.nullsheen.com/contact/" title="Contact page">Contact</a></li>
-                <li className="list f5 f4-ns fw4 dib pr3"><a className="hover-white no-underline white-90" href="https://www.nullsheen.com/about-me/" title="About Me page">About Me</a></li>
-              </ul>
-            </div>
+      <nav className="pv3 ph3 ph4-ns" role="navigation" style={{"background":"black"}}>
+        <div className="flex-l justify-between items-center center">
+          <a href="/" className="f3 fw2 hover-white no-underline white-90 dib">NullSheen Shadowrun Tools</a>
+          <div className="flex-l items-center">
+            <ul className="pl0 mr3">
+              <li className="list f5 f4-ns fw4 dib pr3">
+                <a className="hover-white no-underline white-90" href="https://matrix.nullsheen.com" title="Matrix Gen (3rd) page">Matrix Gen (3rd)</a>
+              </li>
+              <li className="list f5 f4-ns fw4 dib pr3">
+                <a className="hover-white no-underline white-90" href="https://matrix2.nullsheen.com" title="Matrix Builder (2nd) page">Matrix Builder (2nd)</a>
+              </li>
+              <li className="list f5 f4-ns fw4 dib pr3">
+                <a className="hover-white no-underline white-90" href="https://initiative-tracker.nullsheen.com/" title="Init Tracker page">Init Tracker</a>
+              </li>
+              <li className="list f5 f4-ns fw4 dib pr3"><a className="hover-white no-underline white-90" href="https://www.nullsheen.com/software/" title="Tools page">Tools</a></li>
+              <li className="list f5 f4-ns fw4 dib pr3"><a className="hover-white no-underline white-90" href="https://www.nullsheen.com/contact/" title="Contact page">Contact</a></li>
+              <li className="list f5 f4-ns fw4 dib pr3"><a className="hover-white no-underline white-90" href="https://www.nullsheen.com/about-me/" title="About Me page">About Me</a></li>
+            </ul>
           </div>
-        </nav>
+        </div>
+      </nav>
+
+      <h1>Shadowrun 2nd & 3rd Edition Initative Tracker</h1>
       <Container>
         <Row>
           <Col>
+          
             <Button className='saveButton' onClick={handleSaveProject}>Save Order</Button>              
             <Button className='loadButton' onClick={handleModalOpen}  >Load Order</Button>
             <br></br>
