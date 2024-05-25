@@ -203,6 +203,7 @@ const handleLoadProject = (event) => {
               <li className="list f5 f4-ns fw4 dib pr3"><a className="hover-white no-underline white-90" href="https://www.nullsheen.com/software/" title="Tools page">Tools</a></li>
               <li className="list f5 f4-ns fw4 dib pr3"><a className="hover-white no-underline white-90" href="https://www.nullsheen.com/contact/" title="Contact page">Contact</a></li>
               <li className="list f5 f4-ns fw4 dib pr3"><a className="hover-white no-underline white-90" href="https://www.nullsheen.com/about-me/" title="About Me page">About Me</a></li>
+              <li className="list f5 f4-ns fw4 dib pr3"><a className="hover-white no-underline white-90" href="https://www.nullsheen.com/shadowrun-books/" title="Shadowrun Books Page">Shadowrun Books</a></li>
             </ul>
           </div>
         </div>
