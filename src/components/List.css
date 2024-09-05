@@ -4,6 +4,6 @@
 .ControlPanel{
     width:250px;
 }
-.saveButton, .loadButton{
+.saveButton, .loadButton, .btn{
     margin:5px;
 }
