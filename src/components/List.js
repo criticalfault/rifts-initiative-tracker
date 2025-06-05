@@ -39,7 +39,7 @@ export default function List() {
       setInitiativeList(inits);
       nextId = inits.length;
       setShowModal(false);
-      fathom.trackEvent('Loaded Initiative'); // eslint-disable-line
+      fathom.trackEvent('Loaded Initiative for Rifts'); // eslint-disable-line
     };
     reader.readAsText(file);
   };
@@ -163,7 +163,7 @@ export default function List() {
                   const name = document.getElementById('newName').value;
                   setInitiativeList([
                     ...InitiativeList,
-                    { id: nextId++, name, initiative: 1, MDC: 0, SDC: 0, HP: 0, totalMelees: 0, melees: [], isDead: false }
+                    { id: nextId++, name, initiative: 1, MDC: 0, SDC: 0, HP: 0, totalMelees: 1, melees: [false], isDead: false }
                   ]);
                 }}
               >
@@ -174,15 +174,70 @@ export default function List() {
               <Card style={{ width: '21rem', margin: '2px auto' }} key={actor.id}>
                 <Card.Body>
                   <Card.Title>
-                    {actor.name}: <input value={actor.initiative} style={{ width: '100px' }} onChange={handleChangeInitiative} data-key={actor.id} type="number" />
-                    <ButtonConfirm onConfirm={onConfirmDel} targetID={actor.id} title="Delete" query="Are you sure...?" />
-                    <Button variant="outline-danger" size="sm" style={{ marginLeft: '5px' }} onClick={() => toggleDead(actor.id)}>{actor.isDead ? 'Undo X' : 'X'}</Button>
+                    {actor.name}:
                   </Card.Title>
-                  <div>MDC: <input type="number" value={actor.MDC} onChange={(e) => handleChangeStat(e, actor.id, 'MDC')} /></div>
-                  <div>SDC: <input type="number" value={actor.SDC} onChange={(e) => handleChangeStat(e, actor.id, 'SDC')} /></div>
-                  <div>HP: <input type="number" value={actor.HP} onChange={(e) => handleChangeStat(e, actor.id, 'HP')} /></div>
-                  <div>Total Melees: <input type="number" value={actor.totalMelees || 0} onChange={(e) => handleTotalMeleesChange(e, actor.id)} /></div>
-                  <div>Melees:
+                  <InputGroup className="mb-3">
+                    <InputGroup.Text id="Initative">
+                      Initative
+                    </InputGroup.Text>
+                    <Form.Control  
+                     value={actor.initiative} style={{ width: '100px' }} onChange={handleChangeInitiative} data-key={actor.id} type="number"
+                       />
+                  </InputGroup>
+                   <Row>
+                    <Col>
+                      <InputGroup className="mb-3">
+                      <InputGroup.Text id="MDC">
+                        MDC
+                      </InputGroup.Text>
+                      <Form.Control  
+                      type="number"
+                      id="MDC"
+                      value={actor.MDC} 
+                      onChange={(e) => handleChangeStat(e, actor.id, 'MDC')}  />
+                      </InputGroup>
+                    </Col>
+                    <Col>
+                      <InputGroup className="mb-3">
+                      <InputGroup.Text id="SDC">
+                        SDC
+                      </InputGroup.Text>
+                      <Form.Control  
+                      type="number"
+                      id="SDC"
+                      value={actor.SDC} 
+                      onChange={(e) => handleChangeStat(e, actor.id, 'SDC')}  />
+                      </InputGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <InputGroup className="mb-3">
+                      <InputGroup.Text id="HP">
+                        HP
+                      </InputGroup.Text>
+                      <Form.Control  
+                      type="number"
+                      id="HP"
+                      value={actor.HP} 
+                      onChange={(e) => handleChangeStat(e, actor.id, 'HP')}  />
+                      </InputGroup>
+                    </Col>
+                    <Col>
+                       <InputGroup className="mb-3">
+                        <InputGroup.Text id="totalMelees">
+                          Melees:
+                        </InputGroup.Text>
+                        <Form.Control  
+                        type="number" value={actor.totalMelees || 0} 
+                        onChange={(e) => handleTotalMeleesChange(e, actor.id)}   />
+                      </InputGroup>
+                    </Col>
+                  </Row>
+                  
+                 
+                  <div>Melees Spent</div>
+                  <div>
                     {(actor.melees || []).map((used, idx) => (
                       <Form.Check
                         inline
@@ -193,6 +248,8 @@ export default function List() {
                       />
                     ))}
                   </div>
+                   <ButtonConfirm onConfirm={onConfirmDel} targetID={actor.id} title="Delete" query="Are you sure...?" />
+                  <Button variant="outline-danger" size="sm" style={{ marginLeft: '5px' }} onClick={() => toggleDead(actor.id)}>{actor.isDead ? 'Undo' : 'Out Of The Fight'}</Button>
                 </Card.Body>
               </Card>
             ))}
