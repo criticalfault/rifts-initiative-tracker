@@ -121,19 +121,6 @@ export default function List() {
 
   return (
     <>
-      <nav className="pv3 ph3 ph4-ns" role="navigation" style={{ background: 'black' }}>
-        <div className="flex-l justify-between items-center center">
-          <a href="/" className="f3 fw2 hover-white no-underline white-90 dib">NullSheen Rifts Tools</a>
-          <div className="flex-l items-center">
-            <ul className="pl0 mr3">
-              <li className="list f5 f4-ns fw4 dib pr3">
-                <a className="hover-white no-underline white-90" href="https://www.nullsheen.com/software/" title="Tools page">Tools</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-
       <h1>Rifts Initiative Tracker</h1>
       <Container>
         <Row>
